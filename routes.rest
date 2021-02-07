@@ -1,0 +1,19 @@
+//GET ALL
+GET http://localhost:3000/orders
+
+###
+//GET ONE
+GET http://localhost:3000/orders/dxMuXnEG
+
+###
+//CREATE
+POST http://localhost:3000/orders
+Content-Type: application/json
+
+{
+    "name": "test01"
+}
+
+###
+//UPDATE ORDER DELIVERED
+PATCH http://localhost:3000/orders/GHWrdCW_
