@@ -2,7 +2,7 @@ API task for AtlantisGames
 
 app.js
 
-# Swagger
+## Swagger
 http://localhost:3000/swagger
 
 ## Requirements
