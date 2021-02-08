@@ -11,5 +11,4 @@ app.js
 * swagger-jsdo
 * nanoid
 
-command line to install:
 npm install express swagger-ui-express swagger-jsdoc nanoid
