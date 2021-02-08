@@ -1,16 +1,22 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
+
+const dbScanner = require("./services/OrdersDbCleaner")
+setTimeout(dbScanner.pendingOrdersCleaner, 0);
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+
 
 const swaggerOptions = {
     swaggerDefinition:{
         info:{
             title: 'Ordering API',
-            description: 'Task for gg.',
+            description: 'Task for AtlantisGames.',
             contact:{
-                name:'Amazing Name'
+                name:'Antanas Sukevicius',
+                email: "support@example.com"
             },
             servers: ["http://localcost:3000"]
         }

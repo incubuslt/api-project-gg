@@ -1,1 +1,0 @@
-npm install express swagger-ui-express swagger-jsdoc nanoid

@@ -1,33 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
-
-const orderHandler = require("./scripts")
-
-const fs = require('fs');
-const ordersdb = fs.readFileSync('orders.json')
-let orders = JSON.parse(ordersdb)
-let nextScanPeriod = 0;
-//const runTime = 0;
-
-
-function dbScan(){
-    console.log(orders.length)
-    orders = orderHandler.cleanOrders(orders)
-    orderHandler.pushToDB(orders)
-    console.log(orders.length)
-}
-
-
-async function scan(period){
-    setTimeout(dbScan(), period);
-    nextScanPeriod = orderHandler.getDBScanTime(orders)
-    await scan(nextScanPeriod)
-}
-
-//scan(nextScanPeriod);
-
-
+const orderController = require("./ordersMiddleware")
 
 //Get all
 /**
@@ -41,11 +14,9 @@ async function scan(period){
  *          responses: 
  *              '200':
  *                  description: A successful response
- *              '404':
- *                  description: Bad Call
  */
-router.get('/', (req, res) => {
-    res.send(orders);
+router.get('/', orderController.getAllOrder, (req, res) => {
+    res.send(res.orders);
 })
 
 
@@ -63,11 +34,15 @@ router.get('/', (req, res) => {
  *            in: path
  *          responses: 
  *              '200':
- *                  description: A successful response
- *              '404':
- *                  description: Bad Call
+ *                  description: A successful response.
+ *              '204':
+ *                  description: Order not found.
  */
-router.get('/:id', getOrder, (req, res) => {
+router.get('/:id', orderController.getOrder, (req, res) => {
+    if (!res.order) { res.sendStatus(204) }
+    else {
+        res.send(res.order);
+    }
 })
 
 //Create order
@@ -81,7 +56,7 @@ router.get('/:id', getOrder, (req, res) => {
  *          parameters:
  *              - in: body
  *                name: body
- *                description: Product name to order.
+ *                description: Product to order.
  *                required: true
  *                schema:
  *                      $ref: '#/definitions/order'
@@ -89,7 +64,7 @@ router.get('/:id', getOrder, (req, res) => {
  *          responses: 
  *              '201':
  *                  description: Order successfully created.
- *              '404':
+ *              '400':
  *                  description: Bad Request
  * definitions:
  *      order:
@@ -99,11 +74,16 @@ router.get('/:id', getOrder, (req, res) => {
  *          properties:
  *              name:
  *                  type: string
- *                  example: Product
+ *                  example: Product Name
  */
-router.post('/', createOrder, (req, res) => {
-    res.status(201).send(res.order);
-    console.log("Order placed (Notification to seller)");
+router.post('/', orderController.createOrder, (req, res) => {
+    if (res.order) {
+        res.status(201).send(res.order);
+        console.log("Order placed (Notification to seller)");
+    } else {
+        res.sendStatus(400);
+    }
+
 })
 
 //Update order
@@ -113,7 +93,7 @@ router.post('/', createOrder, (req, res) => {
  *      patch:
  *          tags: 
  *          - orders
- *          summary: Update an order.
+ *          summary: Update delivery date.
  *          description: Updates delivery date if not null. Returns object with delivery date.
  *          parameters:
  *              - name: id
@@ -127,37 +107,12 @@ router.post('/', createOrder, (req, res) => {
  *              '404':
  *                  description: Bad Request
  */
-router.patch('/:id', updateOrder, (req, res) => {
+router.patch('/:id', orderController.updateDeliveryTimeStamps, (req, res) => { //funtio nname deliverydate
+    if (!res.order) { res.sendStatus(204); } else {
+        res.send(res.order)
+        console.log("Order delivered (Notification to buyer)")
+    }
 
 })
-
-function getOrder(req, res, next) {
-    order = orderHandler.getRecord(orders, req.params.id);
-    if (order == null) { res.status(204) } else {
-        res.order = order;
-        res.send(res.order);
-        next();
-    }
-}
-
-function createOrder(req, res, next) {
-    order = orderHandler.createRecod(req.body.name);
-    orders.push(order);
-    orderHandler.pushToDB(orders);
-    res.order = order;
-    next();
-}
-
-
-function updateOrder(req, res, next) {
-    order = orderHandler.updateRecord(orders, req.params.id);
-    if (order == null) { res.status(404).send({ message: 'Cannot find order to update.' }) } else {
-        orderHandler.pushToDB(orders); 
-        res.order = order;
-        res.status(200).send(res.order);
-        console.log("Order delivered (notification)")
-        next();
-    }
-}
 
 module.exports = router;

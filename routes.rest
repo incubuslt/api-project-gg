@@ -3,7 +3,7 @@ GET http://localhost:3000/orders
 
 ###
 //GET ONE
-GET http://localhost:3000/orders/dxMuXnEG
+GET http://localhost:3000/orders/dlmax9Av
 
 ###
 //CREATE
@@ -11,9 +11,9 @@ POST http://localhost:3000/orders
 Content-Type: application/json
 
 {
-    "name": "test01"
+    "name": "My product"
 }
 
 ###
 //UPDATE ORDER DELIVERED
-PATCH http://localhost:3000/orders/GHWrdCW_
+PATCH http://localhost:3000/orders/dlmax9Av
