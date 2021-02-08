@@ -11,9 +11,9 @@ POST http://localhost:3000/orders
 Content-Type: application/json
 
 {
-    "name": "My product"
+    "name": "test product name"
 }
 
 ###
 //UPDATE ORDER DELIVERED
-PATCH http://localhost:3000/orders/dlmax9Av
+PATCH http://localhost:3000/orders/kIaSmMPA
